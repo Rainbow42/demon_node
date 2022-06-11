@@ -8,10 +8,10 @@ from sqlalchemy.dialects.postgresql import insert
 from starlette.authentication import (AuthCredentials, AuthenticationBackend,
                                       AuthenticationError, BaseUser)
 from starlette.responses import JSONResponse
+from users.models import User
 
 from application import settings
 from application.db.session import engine
-from users.models import User
 
 
 class RequestUser(BaseModel):

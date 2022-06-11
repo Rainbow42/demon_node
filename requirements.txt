@@ -46,4 +46,5 @@ tenacity==8.0.1
 textfsm==1.1.2
 typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1650370875435/work
 uvicorn @ file:///Users/ktietz/ci_310/uvicorn_1643971601087/work
+uvloop==0.16.0
 zipp @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_66c2c5f2-5dd5-4946-a16a-72af650ebd6cnmz4ou0f/croots/recipe/zipp_1652343960956/work

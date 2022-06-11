@@ -4,7 +4,5 @@
 # СОРТИРОВКИ НЕ ПРИМЕНЯТЬ
 
 from application.db.base_class import Base  # noqa
-from conveir.models import Transporter  # noqa
 from conveir.models import StageTransporter  # noqa
-
-
+from conveir.models import Transporter  # noqa

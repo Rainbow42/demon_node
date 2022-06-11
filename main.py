@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from application import api, settings
 
-
 logging.basicConfig(format='%(levelname)s:     %(message)s',
                     level=logging.INFO)
 log = logging.getLogger(__name__)

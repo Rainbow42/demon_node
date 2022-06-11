@@ -1,8 +1,8 @@
 import datetime
 import uuid as uuid
 
-from sqlalchemy import Column, String, DateTime, text, func, ForeignKey, Enum
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, String, func, text
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from application.db.base_class import Base
 from conveir.const import StatusStageTransporter
