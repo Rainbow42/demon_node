@@ -21,7 +21,7 @@ class Transporter(Base):
     name = Column(String(255), nullable=True)
     version = Column(String(255), nullable=True)
 
-    extended_sending_survey = Column(
+    extended_pipline = Column(
         JSONB,
         nullable=False,
         server_default=text("'{}'::jsonb")
