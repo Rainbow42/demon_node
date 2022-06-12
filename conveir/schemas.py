@@ -6,6 +6,6 @@ from conveir.const import PipelinesEnum
 
 
 class Pipeline(BaseModel):
-    name: Optional[str]
+    name: str
     version: Optional[str] = 'v1.0'
     extended_pipline: List[PipelinesEnum]

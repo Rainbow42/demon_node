@@ -8,7 +8,7 @@ class StatusStageTransporter(Enum):
     FUTURE = 'FUTURE'
 
 
-class PipelinesEnum(Enum):
+class PipelinesEnum(str, Enum):
     BUILD = 'BUILD'
     TESTING = 'TESTING'
     LINTERS = 'LINTERS'

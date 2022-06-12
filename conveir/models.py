@@ -1,11 +1,13 @@
 import datetime
 import uuid as uuid
 
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, String, func, text
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, String, func, text, \
+    Integer
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from application.db.base_class import Base
 from conveir.const import StatusStageTransporter, PipelinesEnum
+from repositories.models import Repositories
 
 
 class Transporter(Base):
@@ -73,5 +75,29 @@ class PiplineMergeRequests(Base):
     )
     status = Column(Enum(StatusStageTransporter),
                     default=StatusStageTransporter.FUTURE)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now())
+
+
+class TransporterRepositories(Base):
+    __tablename__ = "transporter_repositories"
+
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        unique=True,
+        nullable=False,
+        default=uuid.uuid4,
+    )
+    transporter_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey(Transporter.id, ondelete="CASCADE"),
+        nullable=False
+    )
+    repositories_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey(Repositories.id, ondelete="CASCADE"),
+        nullable=False
+    )
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now())

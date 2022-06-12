@@ -29,8 +29,11 @@ async def save_pipeline(
         data: schemas.Pipeline = Body(..., title='Данные о сценарии'),
         db_session: AsyncSession = Depends(get_session),
 ):
-    instance = Transporter(**data)
-    await db_session.execute(instance)
+    instance = Transporter(name=data.name,
+                           version=data.version,
+                           extended_pipline=data.extended_pipline)
+    db_session.add(instance)
+    await db_session.commit()
     return data
 
 
