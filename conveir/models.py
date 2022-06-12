@@ -1,12 +1,12 @@
 import datetime
 import uuid as uuid
 
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, String, func, text, \
-    Integer
+from sqlalchemy import (Column, DateTime, Enum, ForeignKey, Integer, String,
+                        func, text)
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from application.db.base_class import Base
-from conveir.const import StatusStageTransporter, PipelinesEnum
+from conveir.const import PipelinesEnum, StatusStageTransporter
 from repositories.models import Repositories
 
 

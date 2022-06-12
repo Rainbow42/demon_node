@@ -33,3 +33,11 @@ POOL_SIZE = int(os.getenv('POOL_SIZE', 600))
 POOL_RECYCLE = int(os.getenv('POOL_RECYCLE', 3600))
 POOL_TIMEOUT = int(os.getenv('POOL_TIMEOUT', 100))
 MAX_OVERFLOW = int(os.getenv('MAX_OVERFLOW', 100))
+
+GITLAB_API_URL = os.getenv('GITLAB_API_URL', 'https://gitlab.com/').rstrip('/')
+
+
+class GITLAB_API:
+    get_detail_repositories = GITLAB_API_URL + '/api/v4/projects/{}/'
+    get_merge_requests = GITLAB_API_URL + '/api/v4/projects/{}/merge_requests/'
+    get_users = GITLAB_API_URL + '/api/v4/projects/{}/users/'
