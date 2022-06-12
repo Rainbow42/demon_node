@@ -6,3 +6,7 @@
 from application.db.base_class import Base  # noqa
 from conveir.models import StageTransporter  # noqa
 from conveir.models import Transporter  # noqa
+from repositories.models import Repositories  # noqa
+from repositories.models import Repositories  # noqa
+from repositories.models import RepositoriesUsers  # noqa
+from repositories.models import RepositoriesToken  # noqa
