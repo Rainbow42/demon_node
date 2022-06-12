@@ -47,10 +47,11 @@ class RepositoriesToken(Base):
     __tablename__ = "repositories_token"
 
     id = Column(
-        Integer,
+        UUID(as_uuid=True),
         primary_key=True,
+        unique=True,
         nullable=False,
-        unique=True
+        default=uuid.uuid4,
     )
     user_id = Column(
         Integer,
@@ -63,7 +64,7 @@ class RepositoriesToken(Base):
         nullable=False
     )
     private_token = Column(
-        Integer,
+        String,
         nullable=False,
         unique=True
     )

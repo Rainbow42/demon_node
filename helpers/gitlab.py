@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Union
 
 import ujson
 from aiohttp import ClientSession, TCPConnector
@@ -15,29 +15,34 @@ logger.addHandler(handler)
 handler.setLevel(log_level)
 
 
-class ProfilesHelpers:
+class GitLabHelpers:
     def __init__(self, request: Request, private_token: str, project_id: int):
         self.helpers = {
             'cookies': request.cookies,
             'headers': {
                 'Content-Type': request.headers.get('Content-Type',
                                                     'application/json'),
-                'Authorization': request.headers.get('Authorization', '')
+                'Authorization': request.headers.get('Authorization', ''),
+                'PRIVATE-TOKEN': private_token
             },
-            'PRIVATE-TOKEN': private_token
         }
         self.project_id = project_id
 
     async def get_detail_repositories(self) -> RepositoriesBase:
         url = settings.GITLAB_API.get_detail_repositories.format(
             self.project_id)
-        text = self.send_request(url)
+        text = await self.send_request(url)
         repositories = ujson.loads(text)
         return RepositoriesBase(**repositories)
 
-    async def get_merge_requests(self) -> List[MergeRequestBase]:
+    async def get_merge_requests(self, query: list = None) -> List[
+        MergeRequestBase]:
+        if query is None:
+            query = list()
+            query.append([("state", "opened")])
+
         url = settings.GITLAB_API.get_merge_requests.format(self.project_id)
-        text = self.send_request(url)
+        text = await self.send_request(url)
         items = ujson.loads(text)
         return [MergeRequestBase(**mr) for mr in items]
 
@@ -56,8 +61,24 @@ class ProfilesHelpers:
                     )
                 return text
 
-    async def get_uses(self) -> List[UsersBase]:
-        url = settings.GITLAB_API.get_merge_requests.format(self.project_id)
-        text = self.send_request(url)
+    async def get_users(self, to_dict: bool = False) -> Union[dict, List[UsersBase]]:
+        url = settings.GITLAB_API.get_users.format(self.project_id)
+        text = await self.send_request(url)
         users = ujson.loads(text)
-        return [UsersBase(**user) for user in users]
+        if to_dict:
+            return {
+                user.get("id"):
+                    UsersBase(
+                        id=user.get("id"),
+                        username=user.get("username"),
+                        name=user.get("name")
+                    )
+                for user in users
+            }
+
+        return [
+            UsersBase(
+                id=user.get("id"),
+                username=user.get("username"),
+                name=user.get("name")
+            ) for user in users]
