@@ -1,6 +1,7 @@
 import uuid as uuid
 
-from sqlalchemy import Column, DateTime, ForeignKey, String, func, Integer
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, String, Text,
+                        func)
 from sqlalchemy.dialects.postgresql import UUID
 
 from application.db.base_class import Base
@@ -63,7 +64,36 @@ class RepositoriesToken(Base):
         nullable=False
     )
     private_token = Column(
-        Integer,
+        String,
         nullable=False,
         unique=True
     )
+
+
+class MergeRequest(Base):
+    __tablename__ = "merge_request"
+
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        unique=True,
+        nullable=False,
+        default=uuid.uuid4,
+    )
+    author_id = Column(
+        Integer,
+        ForeignKey(RepositoriesUsers.id, ondelete="CASCADE"),
+        nullable=False
+    )
+    repositories_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey(Repositories.id, ondelete="CASCADE"),
+        nullable=False
+    )
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    state = Column(String, nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now())
+    target_branch = Column(String, nullable=False)
+    source_branch = Column(String, nullable=False)

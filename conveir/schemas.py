@@ -1,11 +1,12 @@
-from typing import Optional, List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
-from conveir.const import Pipelines
+from conveir.const import PipelinesEnum
 
 
 class Pipeline(BaseModel):
-    name: Optional[str]
+    name: str
     version: Optional[str] = 'v1.0'
-    extended_pipline: List[Pipelines]
+    extended_pipline: List[PipelinesEnum]
+    repositories_id: int

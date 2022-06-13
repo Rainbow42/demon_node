@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Body, Depends, Path, Request, Response
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conveir import schemas
-from conveir.models import Transporter
-from utils import get_session
+from conveir.models import Transporter, TransporterRepositories
+from repositories.models import Repositories
+from utils.db import get_session
 
 router = APIRouter()
 
@@ -29,8 +31,23 @@ async def save_pipeline(
         data: schemas.Pipeline = Body(..., title='Данные о сценарии'),
         db_session: AsyncSession = Depends(get_session),
 ):
-    instance = Transporter(**data)
-    await db_session.execute(instance)
+    transporter = Transporter(
+        name=data.name,
+        version=data.version,
+        extended_pipline=data.extended_pipline
+    )
+    db_session.add(transporter)
+    await db_session.flush()
+
+    query = select(Repositories).where(Repositories.id_repositories == data.repositories_id)
+    cur_repositories = await db_session.execute(query)
+    repositories = cur_repositories.scalars().first()
+    trans_repositories = TransporterRepositories(
+        repositories_id=repositories.id,
+        transporter_id=transporter.id
+    )
+    db_session.add(trans_repositories)
+    await db_session.commit()
     return data
 
 
