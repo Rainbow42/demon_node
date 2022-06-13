@@ -36,6 +36,8 @@ MAX_OVERFLOW = int(os.getenv('MAX_OVERFLOW', 100))
 
 GITLAB_API_URL = os.getenv('GITLAB_API_URL', 'https://gitlab.com/').rstrip('/')
 
+CHECK_MR_TIME_TASKS = int(os.getenv('CHECK_MR_TIME_TASKS', 60))
+
 
 class GITLAB_API:
     get_detail_repositories = GITLAB_API_URL + '/api/v4/projects/{}/'

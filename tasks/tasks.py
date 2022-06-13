@@ -96,7 +96,7 @@ def check_update_merge_request():
     )
     tokens = sync(session.execute(tokens_query)).scalars().all()
 
-    mrs_ids = {mr.mr_id: mr for mr in mrs}
+    mrs_ids = {mr.id: mr for mr in mrs}
     repositories_tokens = {token.repositories_id: token.private_token
                            for token in tokens}
 
