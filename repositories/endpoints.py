@@ -25,7 +25,7 @@ async def save_repositories(
         request: Request = None,
         db_session: AsyncSession = Depends(get_session),
 ):
-    check_update_merge_request.delay()
+    # check_update_merge_request.delay()
     await exists_model(db_session, Repositories, data.id_repositories)
     gitlab_helpers = GitLabHelpers(request, data.reposition_token, data.id_repositories)
     tasks = [
