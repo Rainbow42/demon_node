@@ -15,18 +15,9 @@ logger.addHandler(handler)
 handler.setLevel(log_level)
 
 
-class GitLabHelpers:
-    def __init__(self, request: Request, private_token: str, project_id: int):
-        self.helpers = {
-            'cookies': request.cookies,
-            'headers': {
-                'Content-Type': request.headers.get('Content-Type',
-                                                    'application/json'),
-                'Authorization': request.headers.get('Authorization', ''),
-                'PRIVATE-TOKEN': private_token
-            },
-        }
-        self.project_id = project_id
+class GitLabHelpersBase:
+    helpers = None
+    project_id = None
 
     async def get_detail_repositories(self) -> RepositoriesBase:
         url = settings.GITLAB_API.get_detail_repositories.format(
@@ -40,8 +31,7 @@ class GitLabHelpers:
             created_at=repositories.get("created_at")
         )
 
-    async def get_merge_requests(self, query: list = None) -> List[
-        MergeRequestBase]:
+    async def get_merge_requests(self, query: list = None) -> List[MergeRequestBase]:
         if query is None:
             query = list()
             query.append([("state", "opened")])
@@ -52,6 +42,7 @@ class GitLabHelpers:
         return [MergeRequestBase(**mr) for mr in items]
 
     async def send_request(self, url) -> str:
+        print(self.helpers)
         async with ClientSession(
                 connector=TCPConnector(verify_ssl=False), **self.helpers
         ) as session:
@@ -66,7 +57,8 @@ class GitLabHelpers:
                     )
                 return text
 
-    async def get_users(self, to_dict: bool = False) -> Union[dict, List[UsersBase]]:
+    async def get_users(self, to_dict: bool = False) -> Union[
+        dict, List[UsersBase]]:
         url = settings.GITLAB_API.get_users.format(self.project_id)
         text = await self.send_request(url)
         users = ujson.loads(text)
@@ -87,3 +79,30 @@ class GitLabHelpers:
                 username=user.get("username"),
                 name=user.get("name")
             ) for user in users]
+
+
+class GitlabHelpersNoRequest(GitLabHelpersBase):
+    def __init__(self,  private_token: str, project_id: int,):
+        self.helpers = {
+            'headers': {
+                'Content-Type':'application/json',
+                'PRIVATE-TOKEN': private_token
+            },
+        }
+        self.project_id = project_id
+
+
+class GitLabHelpers(GitLabHelpersBase):
+    def __init__(self, request: Request, private_token: str, project_id: int, helpers:dict = None):
+
+        self.helpers = {
+            'cookies': request.cookies,
+            'headers': {
+                'Content-Type': request.headers.get('Content-Type',
+                                                    'application/json'),
+                'Authorization': request.headers.get('Authorization', ''),
+                'PRIVATE-TOKEN': private_token
+            },
+        }
+        self.project_id = project_id
+
