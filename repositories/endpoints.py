@@ -9,7 +9,6 @@ from repositories import schemas
 from repositories.models import RepositoriesUsers, Repositories, \
     RepositoriesToken
 from utils.db import get_session, exists_model
-from tasks.tasks import check_update_merge_request
 router = APIRouter()
 
 
@@ -25,7 +24,6 @@ async def save_repositories(
         request: Request = None,
         db_session: AsyncSession = Depends(get_session),
 ):
-    # check_update_merge_request.delay()
     await exists_model(db_session, Repositories, data.id_repositories)
     gitlab_helpers = GitLabHelpers(request, data.reposition_token, data.id_repositories)
     tasks = [

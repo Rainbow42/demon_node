@@ -12,3 +12,5 @@ from repositories.models import RepositoriesUsers  # noqa
 from repositories.models import RepositoriesToken  # noqa
 from conveir.models import PiplineMergeRequests  # noqa
 from conveir.models import TransporterRepositories  # noqa
+from pipeline.models import Container # noqa
+from pipeline.models import ContainerPiplineMergeRequests # noqa

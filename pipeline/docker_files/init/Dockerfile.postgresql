@@ -1,0 +1,10 @@
+FROM postgres:14.2-alpine
+
+ENV POSTGRES_USER redcontrol
+ENV POSTGRES_PASSWORD password
+ENV POSTGRES_DB redcontrol
+ENV PGDATA /var/lib/postgresql/blogs
+
+VOLUME /red-control
+ADD scripts/init.sql /docker-entrypoint-initdb.d
+RUN chmod a+r /docker-entrypoint-initdb.d/*
