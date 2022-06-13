@@ -97,4 +97,3 @@ class MergeRequest(Base):
     updated_at = Column(DateTime, server_default=func.now())
     target_branch = Column(String, nullable=False)
     source_branch = Column(String, nullable=False)
-

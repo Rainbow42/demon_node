@@ -3,8 +3,6 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from conveir.const import PipelinesEnum
-
 
 class RepositoriesBase(BaseModel):
     id: int

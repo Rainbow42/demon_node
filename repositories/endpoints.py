@@ -8,7 +8,7 @@ from helpers.gitlab import GitLabHelpers
 from repositories import schemas
 from repositories.models import RepositoriesUsers, Repositories, \
     RepositoriesToken
-from utils import get_session
+from utils.db import get_session, exists_model
 
 router = APIRouter()
 
@@ -18,13 +18,14 @@ router = APIRouter()
              description='Добавить новый репозиторий',
              operation_id='api_save_repositories',
              tags=['Repositories'],
-             # response_model=schemas.Repositories,
+             response_model=schemas.RepositoriesCreate,
              status_code=200)
 async def save_repositories(
         data: schemas.Repositories = Body(..., title='Данные о сценарии'),
         request: Request = None,
         db_session: AsyncSession = Depends(get_session),
 ):
+    await exists_model(db_session, Repositories, data.id_repositories)
     gitlab_helpers = GitLabHelpers(request, data.reposition_token, data.id_repositories)
     tasks = [
         gitlab_helpers.get_users(to_dict=True),
@@ -48,32 +49,16 @@ async def save_repositories(
         description=project.get("description"),
         created_at=project.get("created_at").replace(tzinfo=None)
     )
+    db_session.add(instance_rep)
+    await db_session.flush()
 
     instance_token = RepositoriesToken(
         user_id=data.user_id,
-        repositories_id=data.id_repositories,
+        repositories_id=instance_rep.id,
         private_token=data.reposition_token
     )
-    db_session.add_all([instance_rep, instance_token])
+    db_session.add(instance_token)
 
     await db_session.commit()
-    return project
-
-
-# @router.post(path='/pipeline/',
-#              name='Создания сценариев конвейера',
-#              description='создания сценариев конвейера',
-#              operation_id='api_save_pipeline',
-#              tags=['Pipeline'],
-#              response_model=schemas.Pipeline,
-#              status_code=200)
-# async def save_pipeline(
-#         data: schemas.Pipeline = Body(..., title='Данные о сценарии'),
-#         db_session: AsyncSession = Depends(get_session),
-#         request: Request = None
-# ):
-#     instance = Transporter(**data)
-#     await db_session.execute(instance)
-#     return data
-
+    return dict(repositories=project, user=user)
 

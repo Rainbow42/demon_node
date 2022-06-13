@@ -9,3 +9,4 @@ class Pipeline(BaseModel):
     name: str
     version: Optional[str] = 'v1.0'
     extended_pipline: List[PipelinesEnum]
+    repositories_id: int

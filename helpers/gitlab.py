@@ -33,7 +33,12 @@ class GitLabHelpers:
             self.project_id)
         text = await self.send_request(url)
         repositories = ujson.loads(text)
-        return RepositoriesBase(**repositories)
+        return RepositoriesBase(
+            id=repositories.get("id"),
+            description=repositories.get("description"),
+            name=repositories.get("name"),
+            created_at=repositories.get("created_at")
+        )
 
     async def get_merge_requests(self, query: list = None) -> List[
         MergeRequestBase]:
