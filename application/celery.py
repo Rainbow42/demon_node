@@ -10,19 +10,14 @@ app.config_from_object('application.celeryconfig')
 
 app.conf.timezone = 'UTC'
 
+app.conf.imports = [
+    'tasks.tasks',
+]
 
-app.autodiscover_tasks(['pipeline.tasks'])
-
-@app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    # Calls test('hello') every 10 seconds.
-    sender.add_periodic_task(10.0, test.s('hello'), name='add every 10')
-
-    # Calls test('world') every 30 seconds
-    sender.add_periodic_task(30.0, test.s('world'), expires=10)
-
-    # Executes every Monday morning at 7:30 a.m.
-    sender.add_periodic_task(
-        crontab(hour=7, minute=30, day_of_week=1),
-        test.s('Happy Mondays!'),
-    )
+app.conf.beat_schedule = {
+    'check_update_merge_request': {
+        'task': 'tasks.tasks.check_update_merge_request',
+        'schedule': 3.0,
+        # 'args': (16, 16)
+    },
+}

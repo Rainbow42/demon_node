@@ -73,13 +73,17 @@ class RepositoriesToken(Base):
 class MergeRequest(Base):
     __tablename__ = "merge_request"
 
-    id = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        unique=True,
-        nullable=False,
-        default=uuid.uuid4,
-    )
+    # id = Column(
+    #     UUID(as_uuid=True),
+    #     primary_key=True,
+    #     unique=True,
+    #     nullable=False,
+    #     default=uuid.uuid4,
+    # )
+    id = Column(Integer,
+                   primary_key=True,
+                   unique=True,
+                   nullable=False)
     author_id = Column(
         Integer,
         ForeignKey(RepositoriesUsers.id, ondelete="CASCADE"),
