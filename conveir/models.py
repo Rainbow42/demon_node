@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from application.db.base_class import Base
 from conveir.const import PipelinesEnum, StatusStageTransporter
-from repositories.models import Repositories
+from repositories.models import Repositories, MergeRequest
 
 
 class Transporter(Base):
@@ -71,7 +71,12 @@ class PiplineMergeRequests(Base):
     stage_transporter_id = Column(
         UUID(as_uuid=True),
         ForeignKey(StageTransporter.id, ondelete="CASCADE"),
-        nullable=False
+        nullable=True
+    )
+    mr_id = Column(
+        Integer,
+        ForeignKey(MergeRequest.id, ondelete="CASCADE"),
+        nullable=True
     )
     status = Column(Enum(StatusStageTransporter),
                     default=StatusStageTransporter.FUTURE)

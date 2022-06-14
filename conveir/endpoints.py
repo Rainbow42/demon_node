@@ -50,21 +50,3 @@ async def save_pipeline(
     await db_session.commit()
     return data
 
-
-# @router.post(path='/pipeline/',
-#              name='Создания сценариев конвейера',
-#              description='создания сценариев конвейера',
-#              operation_id='api_save_pipeline',
-#              tags=['Pipeline'],
-#              response_model=schemas.Pipeline,
-#              status_code=200)
-# async def save_pipeline(
-#         data: schemas.Pipeline = Body(..., title='Данные о сценарии'),
-#         db_session: AsyncSession = Depends(get_session),
-#         request: Request = None
-# ):
-#     instance = Transporter(**data)
-#     await db_session.execute(instance)
-#     return data
-
-

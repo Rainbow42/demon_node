@@ -1,0 +1,31 @@
+FROM python:3.8
+
+ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
+
+RUN apt-get update \
+  && apt-get -y install git \
+#   dependencies for building Python packages
+  && apt-get install -y build-essential \
+  # psycopg2 dependencies
+  && apt-get install -y libpq-dev \
+  # Additional dependencies
+  && apt-get install -y telnet netcat \
+  # cleaning up unused files
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN git config --global http.sslverify false \
+    && git clone https://oauth2:glpat-ncarZKrB_XaSirT1jZ2z@gitlab.com/service-analytics/discovery-failure.git
+
+WORKDIR /discovery-failure
+
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH=”$VIRTUAL_ENV/bin:$PATH”
+
+RUN git checkout origin/develop
+RUN pip install -r /discovery-failure/requirements/requirements.txt
+RUN pip install pytest
+
+ENTRYPOINT ["pytest"]
