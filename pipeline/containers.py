@@ -9,14 +9,19 @@ class Pipline:
 
     def __init__(self):
         self.client = docker.from_env()
+        pwd = subprocess.check_output('pwd')
+        self.pwd = str(pwd.decode('utf-8')).rstrip()
+        self.pwd += "/pipeline/docker_files/"
 
     def start_build(self):
-        pwd = subprocess.check_output('pwd')
-        pwd = str(pwd.decode('utf-8')).rstrip()
-        pwd += "/docker_files/"
 
-        self.client.images.build(path='docker_files', tag='fastapi',
-                                 dockerfile='Dockerfile', nocache=True)
+        self.client.images.build(
+            # path=self.pwd,
+            path='docker_files',
+            tag='fastapi',
+            dockerfile='Dockerfile',
+            nocache=True
+        )
         container = self.client.containers.run('fastapi', detach=True)
 
         performed = False
@@ -32,6 +37,7 @@ class Pipline:
 
     def start_linter(self) -> bool:
         self.client.images.build(
+            # path=self.pwd,
             path='docker_files',
             dockerfile='Dockerfile.linter',
             tag='linter'
@@ -53,7 +59,7 @@ class Pipline:
 
     def start_tests(self) -> bool:
         self.client.images.build(
-            path='docker_files',
+            path=self.pwd,
             dockerfile='Dockerfile.tests',
             tag='tests'
         )
@@ -73,12 +79,12 @@ class Pipline:
 
     def start_init(self) -> bool:
         self.client.images.build(
-            path='docker_files/init',
+            path=self.pwd,
             dockerfile='Dockerfile',
             tag='init'
         )
         self.client.images.build(
-            path='docker_files/init',
+            path=self.pwd,
             dockerfile='Dockerfile.postgresql',
             tag='postgresql_init'
         )
