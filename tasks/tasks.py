@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from collections import defaultdict
 
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
