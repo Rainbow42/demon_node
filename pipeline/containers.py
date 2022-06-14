@@ -2,7 +2,7 @@ import subprocess
 
 import docker
 
-# from conveir.const import PipelinesEnum
+from conveir.const import PipelinesEnum
 
 
 class Pipline:
@@ -108,19 +108,19 @@ class Pipline:
         return False
 
 
-# class RunPipline(Pipline):
-#     def run(self, stage) -> bool:
-#         if stage == PipelinesEnum.BUILD:
-#             return self.start_build()
-#
-#         if stage == PipelinesEnum.TESTING:
-#             return self.start_tests()
-#
-#         if stage == PipelinesEnum.LINTERS:
-#             return self.start_linter()
-#
-#         if stage == PipelinesEnum.INSTALLATION:
-#             return self.start_init()
+class RunPipline(Pipline):
+    def run(self, stage) -> bool:
+        if stage == PipelinesEnum.BUILD:
+            return self.start_build()
+
+        if stage == PipelinesEnum.TESTING:
+            return self.start_tests()
+
+        if stage == PipelinesEnum.LINTERS:
+            return self.start_linter()
+
+        if stage == PipelinesEnum.INSTALLATION:
+            return self.start_init()
 
 
 Pipline().start_linter()

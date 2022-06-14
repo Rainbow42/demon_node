@@ -20,6 +20,5 @@ app.conf.beat_schedule = {
     'check_update_merge_request': {
         'task': 'tasks.tasks.check_update_merge_request',
         'schedule': settings.CHECK_MR_TIME_TASKS,
-        # 'args': (16, 16)
     },
 }

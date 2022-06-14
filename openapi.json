@@ -1,0 +1,308 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Сервис Демон",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/api/demon/test/": {
+            "get": {
+                "tags": [
+                    "Test"
+                ],
+                "summary": "Test",
+                "description": "Test",
+                "operationId": "api_Test",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/demon/pipeline/": {
+            "post": {
+                "tags": [
+                    "Pipeline"
+                ],
+                "summary": "Создания Сценариев Конвейера",
+                "description": "создания сценариев конвейера",
+                "operationId": "api_save_pipeline",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "title": "Данные о сценарии",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/components/schemas/Pipeline"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Pipeline"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/demon/repositories/": {
+            "post": {
+                "tags": [
+                    "Repositories"
+                ],
+                "summary": "Добавить Новый Репозиторий",
+                "description": "Добавить новый репозиторий",
+                "operationId": "api_save_repositories",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "title": "Данные о сценарии",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/components/schemas/Repositories"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RepositoriesCreate"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "HTTPValidationError": {
+                "title": "HTTPValidationError",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                }
+            },
+            "Pipeline": {
+                "title": "Pipeline",
+                "required": [
+                    "name",
+                    "extended_pipline",
+                    "repositories_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "version": {
+                        "title": "Version",
+                        "type": "string",
+                        "default": "v1.0"
+                    },
+                    "extended_pipline": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PipelinesEnum"
+                        }
+                    },
+                    "repositories_id": {
+                        "title": "Repositories Id",
+                        "type": "integer"
+                    }
+                }
+            },
+            "PipelinesEnum": {
+                "title": "PipelinesEnum",
+                "enum": [
+                    "BUILD",
+                    "TESTING",
+                    "LINTERS",
+                    "INSTALLATION"
+                ],
+                "type": "string",
+                "description": "An enumeration."
+            },
+            "Repositories": {
+                "title": "Repositories",
+                "required": [
+                    "id_repositories",
+                    "reposition_token",
+                    "username",
+                    "user_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "id_repositories": {
+                        "title": "Id Repositories",
+                        "type": "integer"
+                    },
+                    "reposition_token": {
+                        "title": "Reposition Token",
+                        "type": "string"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "title": "User Id",
+                        "type": "integer"
+                    }
+                }
+            },
+            "RepositoriesBase": {
+                "title": "RepositoriesBase",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "title": "Created At",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "RepositoriesCreate": {
+                "title": "RepositoriesCreate",
+                "required": [
+                    "repositories",
+                    "user"
+                ],
+                "type": "object",
+                "properties": {
+                    "repositories": {
+                        "$ref": "#/components/schemas/RepositoriesBase"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UsersBase"
+                    }
+                }
+            },
+            "UsersBase": {
+                "title": "UsersBase",
+                "required": [
+                    "id",
+                    "username",
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                }
+            },
+            "ValidationError": {
+                "title": "ValidationError",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "loc": {
+                        "title": "Location",
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        }
+                    },
+                    "msg": {
+                        "title": "Message",
+                        "type": "string"
+                    },
+                    "type": {
+                        "title": "Error Type",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
