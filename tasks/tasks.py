@@ -1,8 +1,7 @@
 import asyncio
 import logging
-from collections import defaultdict
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert
 
 from application.celery import app
@@ -25,7 +24,8 @@ def pipelines_run(mr_id, rep_id):
     sync = loop.run_until_complete
 
     session = SessionLocal()
-    query_rep = select(Repositories.id).where(Repositories.id_repositories==rep_id)
+    query_rep = select(Repositories.id).where(
+        Repositories.id_repositories == rep_id)
     repositories = sync(session.execute(query_rep)).scalars().first()
 
     query_trans = (
@@ -33,24 +33,34 @@ def pipelines_run(mr_id, rep_id):
                Transporter.extended_pipline,
                Transporter.id.label('tr_id')).
             join(Transporter).
-            where(TransporterRepositories.repositories_id==repositories)
+            where(TransporterRepositories.repositories_id == repositories)
     )
     trans = sync(session.execute(query_trans)).fetchone()
 
-    query_pmr = select(PiplineMergeRequests).where(
+    query_pmr = select(PiplineMergeRequests.id,
+                       PiplineMergeRequests.status,
+                       PiplineMergeRequests.stage_transporter_id).where(
         PiplineMergeRequests.mr_id == mr_id,
         PiplineMergeRequests.stage_transporter_id == None
     )
-    pmr = sync(session.execute(query_pmr)).scalars().first()
-    pmr.status = StatusStageTransporter.PROGRESS.value
-    sync(session.flush())
+
+    pmr = sync(session.execute(query_pmr)).fetchone()
+    query_pmr_up = update(PiplineMergeRequests).where(
+        PiplineMergeRequests.id == pmr.id
+    ).values({'status': StatusStageTransporter.PROGRESS.value})
+    sync(session.execute(query_pmr_up))
+
+    sync(session.commit())
 
     stage_tr = StageTransporter(transporter_id=trans.tr_id)
     session.add(stage_tr)
     sync(session.flush())
 
-    pmr.stage_transporter_id = stage_tr.id
-    sync(session.flush())
+    query_pmr_up = update(PiplineMergeRequests).where(
+        PiplineMergeRequests.id == pmr.id
+    ).values({'stage_transporter_id':stage_tr.id})
+    sync(session.execute(query_pmr_up))
+    sync(session.commit())
 
     for stage in trans.extended_pipline:
         stage_tr.stage = stage
@@ -58,11 +68,19 @@ def pipelines_run(mr_id, rep_id):
         sync(session.flush())
         result: bool = RunPipline().run(stage)
         if not result:
-            pmr.status = StatusStageTransporter.FAILED.value
+            query_pmr_up = update(PiplineMergeRequests).where(
+                PiplineMergeRequests.id == pmr.id
+            ).values({'status': StatusStageTransporter.FAILED.value})
+            sync(session.execute(query_pmr_up))
             sync(session.commit())
             logger.info(f"PIPELINES MR id {mr_id} stage {pmr.status}")
             return
-    pmr.status = StatusStageTransporter.DONE.value
+
+    query_pmr_up = update(PiplineMergeRequests).where(
+        PiplineMergeRequests.id == pmr.id
+    ).values({'status': StatusStageTransporter.DONE.value})
+    sync(session.execute(query_pmr_up))
+
     sync(session.commit())
     return
 
